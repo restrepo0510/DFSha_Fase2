@@ -1,0 +1,11 @@
+# nombre   IP PRIVADA (la ves en la consola EC2)   zona   rol
+# Formato: 4 columnas separadas por espacios. Reemplace cada IP_PRIVADA por la IP privada real de esa instancia.
+# Zonas: coinciden con la zona de disponibilidad REAL en que lanzó cada VM (a = us-east-1a, b = us-east-1b, c = us-east-1c).
+gateway  IP_PRIVADA   a   gateway
+mds-1    IP_PRIVADA   a   mds
+mds-2    IP_PRIVADA   b   mds
+mds-3    IP_PRIVADA   c   mds
+dn-1     IP_PRIVADA   a   dn
+dn-2     IP_PRIVADA   b   dn
+dn-3     IP_PRIVADA   c   dn
+dn-4     IP_PRIVADA   a   dn

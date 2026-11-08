@@ -1,0 +1,26 @@
+# VM de metadatos (una por AZ). Uso: MDS_ID=mds-1 MDS_IP=$MDS1_IP docker compose -f compose.mds.yml --env-file env up -d
+services:
+  mds:
+    image: dfsha:latest
+    command: python -m dfsha.mds.server
+    network_mode: host                 # puertos 7000 (Raft sobre mTLS), 8443 (REST TLS 1.3), 9444 (gRPC meta, mTLS)
+    restart: unless-stopped
+    environment:
+      DFSHA_MDS_ID: ${MDS_ID}
+      DFSHA_MDS_CLUSTER: mds-1=${MDS1_IP}:${RAFT_PORT}:${REST_PORT}:${MDS_GRPC_PORT},mds-2=${MDS2_IP}:${RAFT_PORT}:${REST_PORT}:${MDS_GRPC_PORT},mds-3=${MDS3_IP}:${RAFT_PORT}:${REST_PORT}:${MDS_GRPC_PORT}
+      DFSHA_DATA_DIR: /data
+      DFSHA_KEYS: /keys
+      DFSHA_CERTS: /certs
+      DFSHA_RAFT_PASSWORD: ${DFSHA_RAFT_PASSWORD}
+      DFSHA_USERS: ${DFSHA_USERS}
+      DFSHA_HB_S: ${DFSHA_HB_S}
+      DFSHA_SUSPECT_S: ${DFSHA_SUSPECT_S}
+      DFSHA_DEAD_S: ${DFSHA_DEAD_S}
+      DFSHA_GRACE_S: ${DFSHA_GRACE_S}
+      DFSHA_BLOCK_SIZE: ${DFSHA_BLOCK_SIZE}
+      DFSHA_DN_ADMISSION: ${DFSHA_DN_ADMISSION}
+      DFSHA_REBALANCE: ${DFSHA_REBALANCE}
+    volumes:
+      - /opt/dfsha/data:/data
+      - /opt/dfsha/keys:/keys:ro
+      - /opt/dfsha/certs:/certs:ro

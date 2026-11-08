@@ -1,0 +1,50 @@
+syntax = "proto3";
+package dfsha;
+
+message Replica { string dn_id = 1; string addr = 2; string zone = 3; }
+
+// ---- Plano de datos: DataNode ----
+message PutBlockChunk {
+  // primer mensaje: metadatos (+ primer trozo); siguientes: solo data
+  string block_id = 1; string token = 2; repeated Replica next = 3;
+  string expected_sha256 = 4; bytes data = 5;
+}
+message PutBlockReply { string sha256 = 1; repeated string acked = 2; string error = 3; }
+// offset/length se expresan sobre el texto cifrado del bloque (permite leer solo los segmentos GCM necesarios)
+message GetBlockRequest { string block_id = 1; string token = 2; int64 offset = 3; int64 length = 4; }
+message Chunk { bytes data = 1; }
+// Replicación en cadena (pipeline): cada nodo guarda y reenvía al siguiente de 'next'
+message StoreChunk { string block_id = 1; string expected_sha256 = 2; bytes data = 3; repeated Replica next = 4; }
+message StoreReply { bool ok = 1; string sha256 = 2; string error = 3; repeated string acked = 4; }
+message ReplicateRequest { string block_id = 1; string target_addr = 2; string target_id = 3; }
+message DeleteRequest { string block_id = 1; }
+message Ack { bool ok = 1; string sha256 = 2; string error = 3; }
+message CheckRequest { repeated string block_ids = 1; }
+message BlockInfo { string block_id = 1; bool present = 2; string sha256 = 3; }
+message CheckReply { string dn_id = 1; repeated BlockInfo blocks = 2; }
+
+service DataNode {
+  rpc PutBlock(stream PutBlockChunk) returns (PutBlockReply);   // cliente -> primario (TLS + token); el primario reenvía en cadena
+  rpc GetBlock(GetBlockRequest) returns (stream Chunk);         // cliente -> nodo (TLS + token), rango opcional
+  rpc StoreBlock(stream StoreChunk) returns (StoreReply);       // nodo -> nodo (mTLS): eslabón de la cadena / reparación
+  rpc ReplicateBlock(ReplicateRequest) returns (Ack);           // solo líder (mTLS, CN mds-*): el nodo origen empuja a destino
+  rpc DeleteBlock(DeleteRequest) returns (Ack);                 // solo líder (mTLS, CN mds-*)
+  rpc CheckBlocks(CheckRequest) returns (CheckReply);           // solo líder (mTLS, CN mds-*): verifica réplicas antes del commit
+}
+
+// ---- Plano de control: Meta (nodo -> metadatos) ----
+// op: replicate | delete | verify
+message Order { string op = 1; string block_id = 2; string target_id = 3; string target_addr = 4; }
+message HeartbeatRequest {
+  string dn_id = 1; string addr = 2; string zone = 3;
+  int64 free_bytes = 4; int64 used_bytes = 5; repeated string new_blocks = 6;
+  repeated string bad_blocks = 7;   // copias que el propio nodo verificó como corruptas y apartó
+}
+message HeartbeatReply { bool not_leader = 1; string leader_hint = 2; repeated Order orders = 3; }
+message BlockReportBatch { string dn_id = 1; repeated string block_ids = 2; bool last = 3; }
+message BlockReportReply { bool not_leader = 1; string leader_hint = 2; int32 known = 3; int32 orphans = 4; }
+
+service Meta {
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatReply);
+  rpc BlockReport(stream BlockReportBatch) returns (BlockReportReply);
+}

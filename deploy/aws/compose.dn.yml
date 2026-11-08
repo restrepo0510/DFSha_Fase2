@@ -1,0 +1,22 @@
+# VM de datos. Uso: DN_ID=dn-1 DN_IP=$DN1_IP DN_ZONE=a docker compose -f compose.dn.yml --env-file env up -d
+services:
+  dn:
+    image: dfsha:latest
+    command: python -m dfsha.dn.server
+    network_mode: host                 # puertos 9443 (cliente) y 9444 (nodo, mTLS)
+    cap_add: [NET_ADMIN]               # permite tc/iptables desde el host para inyectar fallos en pruebas
+    restart: unless-stopped
+    environment:
+      DFSHA_DN_ID: ${DN_ID}
+      DFSHA_DN_PORT: ${DN_PORT}
+      DFSHA_DN_ADDR: ${DN_IP}:${DN_PORT}
+      DFSHA_ZONE: ${DN_ZONE}
+      DFSHA_MDS_GRPC: ${MDS1_IP}:${MDS_GRPC_PORT},${MDS2_IP}:${MDS_GRPC_PORT},${MDS3_IP}:${MDS_GRPC_PORT}
+      DFSHA_DATA_DIR: /blocks
+      DFSHA_KEYS: /keys
+      DFSHA_CERTS: /certs
+      DFSHA_HB_S: ${DFSHA_HB_S}
+    volumes:
+      - /opt/dfsha/blocks:/blocks      # volumen EBS cifrado
+      - /opt/dfsha/keys-dn:/keys:ro
+      - /opt/dfsha/certs:/certs:ro

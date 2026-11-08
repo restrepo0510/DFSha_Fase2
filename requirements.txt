@@ -1,0 +1,16 @@
+# Versiones exactas con las que se ejecutaron todas las pruebas (Python 3.13). El código gRPC de dfsha/pb fue
+# generado con grpcio-tools==1.85.1 / protobuf 7.x: si cambian estas versiones, regenerar con scripts/gen_proto.sh.
+fastapi==0.162.2
+starlette==1.10.0
+pydantic==2.14.3
+uvicorn[standard]==0.54.0
+grpcio==1.85.1
+grpcio-tools==1.85.1
+protobuf==7.36.2
+pysyncobj==0.3.17
+cryptography==50.0.2
+PyJWT==2.15.1
+argon2-cffi==25.1.0
+httpx==0.28.1
+pytest==9.2.0
+matplotlib==3.11.2
