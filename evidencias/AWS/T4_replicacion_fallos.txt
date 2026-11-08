@@ -1,0 +1,15 @@
+[2026-11-08 22:44:05] archivo 64 MB sha256=32c51aca78e26c9b7da2048507e99c70a217aa07063a0dad934c9bb5c080e0d2; R=3 completo; réplicas en ['dn-1', 'dn-2', 'dn-4']; víctima=dn-1
+[2026-11-08 22:44:06] chaos kill dn-1: a1f8f444682d
+[2026-11-08 22:44:07] get durante la caída OK en 0.60s, hash idéntico (failovers del cliente: 16)
+[2026-11-08 22:44:35] dn-1 marcado DEAD a los 28s
+[2026-11-08 22:51:24] re-replicación a R=3 sin dn-1 en 409s tras DEAD; réplicas ahora en ['dn-2', 'dn-3', 'dn-4']
+[2026-11-08 22:51:25] get tras re-replicación: hash idéntico
+[2026-11-08 22:51:26] chaos start dn-1: a1f8f444682d
+[2026-11-08 22:51:29] dn-1 vuelve ALIVE (block report reconcilia sobrantes)
+[2026-11-08 22:51:29] líder MDS actual: mds-1
+[2026-11-08 22:51:29] chaos kill mds-1: c86b98bf2935
+[2026-11-08 22:51:32] stat tras caer el líder: OK tras 2.75s (ventana de indisponibilidad); versión 1 intacta
+[2026-11-08 22:51:40] put con 2/3 MDS (quórum Raft) OK
+[2026-11-08 22:51:41] nuevo líder: mds-2
+[2026-11-08 22:51:42] chaos start mds-1: c86b98bf2935
+[2026-11-08 22:51:50] RESULTADO: OK (garantía: lectura con 1 réplica caída, R=3 restaurado, metadatos disponibles con quórum 2/3)

@@ -1,0 +1,2 @@
+réplica retrasada (dn-3 +15s): commit 200 con 1/8 bloques en 2/3 (UNDER_REPLICATED); lectura inmediata íntegra sin contactar a dn-3; tras la llegada de la réplica, todos 3/3
+réplica desconectada (kill dn-2): escritura OK con W=2, re-replicación a 3/3 sin ella; con <2 nodos vivos: 503 INSUFFICIENT_REPLICAS y el archivo no existe (sin parciales)

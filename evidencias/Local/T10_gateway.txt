@@ -1,0 +1,2 @@
+NGINX (deploy/aws/nginx.conf) delante de 3 MDS: put/get por meta.dfsha.internal con hash idéntico; respuestas directas [200, 307] (307 desde seguidores, el cliente siguió 3 redirecciones); TLS 1.2 rechazado
+caída del líder mds-1 detrás del gateway: put exitoso en 6.45s; con 1 nodo vivo el 503 INSUFFICIENT_REPLICAS llega intacto al cliente

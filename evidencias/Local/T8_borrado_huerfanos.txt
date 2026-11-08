@@ -1,0 +1,1 @@
+rm -> lápida (stat 404) y el lector con instantánea siguió leyendo en la gracia; GC liberó 3 bloques a los 24s; versión 1 reemplazada -> 410 SNAPSHOT_EXPIRED tras la gracia y sus bloques liberados; cliente muerto sin commit: archivo nunca publicado, 2 bloques huérfanos eliminados por GC (TTL de la transacción + gracia)
