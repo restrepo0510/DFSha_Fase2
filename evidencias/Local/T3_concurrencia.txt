@@ -1,0 +1,4 @@
+[sin lock, mismo bloque] resultados={'c1': '409 VERSION_CONFLICT', 'c2': '200'}; contenido final=b'BBBB'; versión=2
+[sin lock, bloques distintos] ambos commits OK por rebase: versión 3 con cambios de los dos clientes
+[4 appends concurrentes] los 4 se aplican en orden de commit, size=39
+[lock] 2.º lock -> 423 LOCKED; escritor sin lock -> 423; titular expirado -> 409 STALE_FENCING (épocas 1 -> 2); contenido intacto
