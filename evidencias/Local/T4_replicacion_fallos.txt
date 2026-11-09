@@ -1,2 +1,0 @@
-kill -9 dn-1; get durante la caída OK en 0.07s (hash idéntico); DEAD detectado; re-replicación a R=3 en 9.6s tras DEAD; nodo reiniciado reconciliado (sobrantes eliminados)
-kill -9 del líder mds-2: ventana de indisponibilidad 2.93s; nuevo líder mds-1; metadatos intactos y escrituras siguen (quórum 2/3); mds-2 reintegrado

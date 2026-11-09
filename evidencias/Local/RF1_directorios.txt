@@ -1,1 +1,0 @@
-mkdir -p, ls, cd, rmdir (409 NOT_EMPTY), mv, mkdir existente (409 EXISTS), rm -r, ls inexistente (404): OK

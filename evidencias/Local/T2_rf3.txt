@@ -1,1 +1,0 @@
-x (EXISTS al repetir), r+ (solo bloque 1 cambió: b-9f54a39e->b-6198171c), r+ fuera de EOF (400), read(off,n) cruzando 2 bloques = 2 GetBlock, a (v3, 4 bloques), w (v4), close-to-open e instantánea: OK

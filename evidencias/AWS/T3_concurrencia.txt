@@ -1,8 +1,0 @@
-[2026-11-08 22:40:29] [mismo bloque, sin lock] resultados={'c1': '200 OK', 'c2': '409 VERSION_CONFLICT'}; contenido final=b'AAAA'; versión=2
-[2026-11-08 22:40:30] [bloques distintos, sin lock] resultados={'c1': '200 OK', 'c2': '200 OK'}; bloque0=b'UNO' bloque2=b'DOS'; versión=3
-[2026-11-08 22:40:30] [2 anexos concurrentes] resultados={'c1': '200 OK', 'c2': '200 OK'}; size 12582912->12582928 (+16 esperado)
-[2026-11-08 22:40:31] [lock X bloque 0 de c1] c2 escribe bloque 0 -> 423 LOCKED
-[2026-11-08 22:40:31] [lock X bloque 0 de c1] c2 escribe bloque 1 -> 200 OK (granularidad por bloque)
-[2026-11-08 22:40:31] [lock] 2.º lock X sobre el mismo bloque -> 423 LOCKED
-[2026-11-08 22:40:31] [lock S + S] compatibles: ambos obtienen el lock compartido
-[2026-11-08 22:40:31] RESULTADO: OK (política: CAS por versión + rebase en bloques disjuntos + anexos serializados + locks S/X con lease y fencing)

@@ -1,1 +1,0 @@
-login, mkdir, cd, put, ls, get (hash idéntico), write r+ por offset, cat con rango, append, mv, lock, rm, rmdir: OK

@@ -1,1 +1,0 @@
-AppendEntries atrasado: entradas 1..8 ya aplicadas se conservan (PySyncObj las habría borrado); conflicto real en entradas no aplicadas: se trunca y se reemplaza (Raft §5.3)
