@@ -1,0 +1,18 @@
+[307] un seguidor responde 307 NOT_LEADER con Location=https://127.0.0.1:18002...; el cliente sigue al líder conservando método y cuerpo
+[G1] commit con acks inventados -> 503 INSUFFICIENT_REPLICAS (el líder verificó el hash en cada nodo), txn ABORTED, nada publicado; escritura real OPEN -> PREPARED -> COMMITTED y commit repetido idempotente
+[ABA] borrar y recrear el archivo durante una escritura -> 409 VERSION_CONFLICT; el archivo nuevo queda íntegro
+[home] rm -r y mv del directorio raíz del usuario -> 403
+[tokens] subida que dura más que la vigencia del block token: el cliente renovó 1 token(s) y confirmó
+[locks] S+S compatibles; X frente a S -> 423; escritor bloqueado por S ajeno -> 423; X por bloque: bloques distintos en paralelo, mismo bloque -> 423; lock(wait) espera a que se libere
+[locks] rm/mv de un archivo bloqueado por otro titular -> 423; el titular lo mueve y su lock lo acompaña
+[auth] refresh rota los tokens (8 h); reutilizar un refresh token (mismo jti) -> 401; tras logout -> 401
+[auth] 5 intentos fallidos por minuto: [401, 401, 401, 401, 401, 429] y luego 429 aun con la clave correcta
+[auditoría] 134 eventos en mds-1/audit.log (O_APPEND, 0600); tipos: ['abort', 'bad_replica', 'commit', 'commit_failed', 'leader_elected', 'lock', 'lock_denied', 'login', 'login_failed', 'mkdir', 'mv', 'open', 'refresh_reuse', 'replica_corrupt', 'rm', 'unlock']
+[canal] Raft solo acepta TLS 1.3 con certificado mds-* (en claro, sin certificado o con certificado dn-* -> cerrado); el REST de metadatos rechaza TLS 1.2
+[mTLS] DeleteBlock/CheckBlocks con certificado dn-* -> PERMISSION_DENIED; con certificado mds-* -> permitido
+[datos] un bloque existente no se sobrescribe (ALREADY_EXISTS); un .part abandonado se borra por GC sin reiniciar el nodo
+[RF3] read(off, 100 B) dentro de un bloque de 256 KiB trajo 65552 B (un segmento GCM de 64 KiB + etiqueta) con GetBlock por rango
+[anexos] tras 8 bloques cortos por anexos, la compactación los reescribió en 1 bloque; versión final 10 con 2 bloques y el contenido intacto
+[instantánea] un handle abierto cuya versión superó la gracia y fue liberada -> 410 SNAPSHOT_EXPIRED
+[UC9] alta de dn-6 -> rebalanceo gradual le trasladó 8 bloques; retiro -> sus bloques se trasladaron (DECOMMISSIONED, 0 bloques); lecturas íntegras durante todo el proceso
+[integridad] un cliente que reporta como corruptas réplicas sanas no las retira: cada nodo recalcula el hash y solo él puede apartar su copia
