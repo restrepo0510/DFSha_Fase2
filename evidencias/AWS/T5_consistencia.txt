@@ -1,0 +1,23 @@
+[2026-11-08 22:53:00] chaos delay 5000ms en dn-3: 
+[2026-11-08 22:53:00] intento 0: put 32 MB en 0.6s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:02] intento 1: put 32 MB en 1.3s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:03] intento 2: put 32 MB en 0.6s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:04] intento 3: put 32 MB en 0.6s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:04] intento 4: put 32 MB en 0.5s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:05] intento 5: put 32 MB en 0.5s; bloques con <3 réplicas justo tras el commit: 0/8
+[2026-11-08 22:53:05] AVISO: ningún bloque quedó <3 réplicas tras el commit (la réplica lenta no fue elegida o llegó a tiempo); repetir la prueba
+[2026-11-08 22:53:50] chaos undelay dn-3: 
+[2026-11-08 22:53:51] chaos partition dn-2: 
+[2026-11-08 22:53:52] put con dn-2 desconectado: OK (W=2 en ≥2 zonas)
+[2026-11-08 22:53:52] get con la réplica desconectada: hash idéntico
+[2026-11-08 22:54:19] dn-2 DEAD; bloques re-replicados a R=3 sin él
+[2026-11-08 22:54:20] chaos heal dn-2: 
+[2026-11-08 22:54:26] dn-2 reconectado: ALIVE; block report reconcilia
+[2026-11-08 22:54:26] sin quórum: se detienen ['dn-1', 'dn-2', 'dn-3'], queda 1 DN vivo
+[2026-11-08 22:55:25] put sin quórum -> 503 INSUFFICIENT_REPLICAS
+[2026-11-08 22:55:25] stat del archivo rechazado -> 404 NOT_FOUND: no quedó nada parcial publicado
+[2026-11-08 22:55:26] chaos start dn-1: a1f8f444682d
+[2026-11-08 22:55:27] chaos start dn-2: 90a50428305d
+[2026-11-08 22:55:27] chaos start dn-3: 063a8767c6b3
+[2026-11-08 22:55:30] todos los DN vuelven ALIVE
+[2026-11-08 22:55:30] RESULTADO: OK (garantías: commit con W=2 en ≥2 zonas; lecturas íntegras; 3.ª réplica converge; sin quórum => 503 y sin parciales)

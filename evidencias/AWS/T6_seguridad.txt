@@ -1,0 +1,27 @@
+[2026-11-08 22:56:22] AUTORIZADO: alice escribe y lee /users/alice/seg/secreto.txt (1150000 B)
+[2026-11-08 22:56:22] DENEGADO: login con clave incorrecta -> 401 UNAUTHENTICATED
+[2026-11-08 22:56:22] DENEGADO: petición sin JWT -> 401
+[2026-11-08 22:56:22] DENEGADO: JWT con firma falsa -> 401
+[2026-11-08 22:56:22] DENEGADO: bob lista /users/alice/seg -> 403 FORBIDDEN
+[2026-11-08 22:56:22] DENEGADO: bob pide manifiesto del archivo de alice -> 403 FORBIDDEN
+[2026-11-08 22:56:22] DENEGADO: alice llama a /v1/admin/nodes -> 403 FORBIDDEN
+[2026-11-08 22:56:22] DENEGADO: admin intenta leer contenido de alice -> 403 FORBIDDEN
+[2026-11-08 22:56:22] CANAL TLS 1.3 aceptado: Verification: OK | New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384 | Protocol: TLSv1.3 | Protocol  : TLSv1.3 | Cipher    : TLS_AES_256_GCM_SHA384 | Protocol  : TLSv1.3 | Cipher    : TLS_AES_256_GCM_SHA384
+[2026-11-08 22:56:22] CANAL TLS 1.2 rechazado (líneas de alerta/handshake failure: 1)
+[2026-11-08 22:56:27] CANAL gRPC sin TLS contra 172.31.89.124:9443: rechazado (no se establece el canal)
+[2026-11-08 22:56:27] TOKEN de bloque falso sobre TLS -> PERMISSION_DENIED
+[2026-11-08 22:56:34] CAPTURA tcpdump en dn-1 (puertos 9443/9444) durante un put: paquetes=470 texto_claro=0  (texto_claro debe ser 0)
+[2026-11-08 22:56:40] ALMACENAMIENTO en disco (bloques .blk / ocurrencias del texto claro): dn-1=342/0, dn-2=371/0, dn-3=334/0, dn-4=368/0
+[2026-11-08 22:56:40] ALMACENAMIENTO: ningún .blk contiene el texto en claro (AES-256-GCM en el cliente; los DN solo ven texto cifrado)
+[2026-11-08 22:56:40] volumen del DN:
+NAME         TYPE MOUNTPOINT                    SIZE
+loop0        loop /snap/core22/2955              74M
+loop1        loop /snap/amazon-ssm-agent/13349 28.4M
+loop2        loop /snap/snapd/28254            44.7M
+nvme0n1      disk                                20G
+├─nvme0n1p1  part /                            18.9G
+├─nvme0n1p13 part /boot                        1023M
+├─nvme0n1p14 part                                 4M
+[2026-11-08 22:56:41] INTEGRIDAD: se altera 1 byte del bloque b-91acbb018b894af6aff7eb056880575a en dn-1 (rc=0)
+[2026-11-08 22:56:41] get tras alterar 1 byte de un bloque en dn-1: contenido íntegro=True; el cliente detectó hash/etiqueta inválidos y usó otra réplica (failovers=1)
+[2026-11-08 22:56:41] RESULTADO: OK (autorización 401/403, TLS 1.3, tráfico ilegible, almacenamiento cifrado, corrupción detectada)
