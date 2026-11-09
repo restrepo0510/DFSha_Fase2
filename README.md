@@ -12,6 +12,9 @@ Python 3.13 · FastAPI (REST de control) · gRPC (plano de datos) · Raft (PySyn
 | Documento | Contenido |
 |---|---|
 | [`docs/INFORME_TECNICO_FINAL.pdf`](docs/INFORME_TECNICO_FINAL.pdf) | Informe técnico final (entregable §5.3): comparación de propuestas individuales y decisión del equipo (matriz de riesgo), arquitectura consensuada, garantías, cambios frente a Fase I, API, algoritmos distribuidos, seguridad, despliegue, estrategia de pruebas, resultados reales en AWS (T1–T7), decisiones de ingeniería, limitaciones, trabajo futuro y conclusiones |
+| [`docs/DISENO_FASE2.md`](docs/DISENO_FASE2.md) | Garantías comprobables, semántica de RF3, cumplimiento del diseño de Fase I, registro de decisiones completo, API, seguridad, limitaciones |
+| [`docs/AWS.md`](docs/AWS.md) | Topología y pasos de despliegue en AWS Academy, guion de demostración para el video |
+| [`docs/DESPLIEGUE_PASO_A_PASO.md`](docs/DESPLIEGUE_PASO_A_PASO.md) | Guion completo desde cero: crear las VM en la consola de AWS Academy, par de claves, grupo de seguridad, y desplegar con `deploy_all.sh` |
 
 ```
 cliente (CLI/SDK: cifra, parte en bloques, hash, paralelo; solo conoce meta.dfsha.internal)
@@ -34,13 +37,14 @@ cliente (CLI/SDK: cifra, parte en bloques, hash, paralelo; solo conoce meta.dfsh
 | `dfsha/dn/server.py` | Nodo de datos: replicación en cadena, `.part→fsync→hash→.blk`, inmutabilidad, `GetBlock` por rango, `CheckBlocks`, heartbeat, block report, scrubbing, GC de `.part` |
 | `dfsha/client/` | SDK (`DFSha`, `Handle`) y CLI (`python -m dfsha.client`) |
 | `dfsha/pb/` | Stubs gRPC generados (`dfsha_pb2.py`, `dfsha_pb2_grpc.py`) |
+| `scripts/` | `gen_certs.py` (CA, certificados mTLS por nodo), `local_cluster.py` (levanta 3 MDS + 5 DN reales en localhost, usado por los tests y en modo interactivo), `gen_proto.sh` (regenera los stubs gRPC), `resumen.py` (reúne evidencias + rendimiento + gráficas en `evidencias/Local/RESUMEN.md`) |
 | `tests/` | `conftest.py` + T0, T1, T2, T3, T4 (incluye T5), T6, T8, T9, T10; cada prueba deja evidencia en `evidencias/` |
 | `bench/` | `bench.py` (experimentos E1–E10, local o remoto), `plot.py` (gráficas), `run_local_all.sh` (corre varias condiciones en local) |
 | `deploy/Dockerfile` | Imagen única; el rol se elige con el comando (`python -m dfsha.mds.server` \| `dfsha.dn.server` \| `dfsha.client`) |
 | `deploy/aws/` | `deploy_all.sh` (despliegue automático de las VM), `bootstrap.sh` (provisión por rol en cada VM), `gen_all_certs.sh` (PKI/mTLS), `chaos_all.sh`/`chaos.sh` (inyección de fallos remota real), `compose.mds.yml`/`compose.dn.yml`, `nginx.conf`, `env.example` (IPs privadas de las VM), `inventory.txt` |
 | `evidencias/AWS/` | Evidencia de T1–T7 corridas contra el **clúster real en AWS**: `T1_*.txt` … `T7_rendimiento.txt`, `rendimiento.csv`, `Graficas/` (diagramas de arquitectura, despliegue y secuencia) |
 | `evidencias/Local/` | Evidencia de T0–T10 corridas en **local** (procesos separados con TLS/mTLS real): `T0_*.txt` … `T10_gateway.txt`, `RF1_directorios.txt`, `CLI.txt`, `bench.csv`, `RESUMEN.md`, `Graficas/` (E1–E10) |
-| `docs/INFORME_TECNICO_FINAL.pdf` | Informe técnico final del proyecto |
+| `docs/` | `INFORME_TECNICO_FINAL.pdf`, `DISENO_FASE2.md`, `AWS.md`, `DESPLIEGUE_PASO_A_PASO.md` |
 | `requirements.txt` | Versiones exactas usadas en todas las pruebas (Python 3.13) |
 
 ## Inicio rápido (local, sin Docker)
@@ -48,6 +52,7 @@ cliente (CLI/SDK: cifra, parte en bloques, hash, paralelo; solo conoce meta.dfsh
 python3.13 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 python -m pytest tests -q                   # levanta 3 MDS + 5 DN con TLS/mTLS en procesos separados (~4 min); T10 requiere nginx
+python -m scripts.local_cluster              # clúster interactivo; imprime DFSHA_META y DFSHA_CA
 export DFSHA_META=https://127.0.0.1:18002 DFSHA_CA=/tmp/dfsha_local/certs/ca.pem   # basta UN MDS: si no es líder responde 307
 python -m dfsha.client login alice -p alicepw
 python -m dfsha.client mkdir docs && python -m dfsha.client put archivo.bin docs/archivo.bin && python -m dfsha.client ls docs
@@ -57,7 +62,7 @@ Usuarios de prueba: `alice/alicepw`, `bob/bobpw`, `carol/carolpw`, `admin/adminp
 
 ## Despliegue y pruebas en AWS Academy (clúster real)
 
-El sistema fue desplegado y verificado en **VM reales** de AWS Academy (1 gateway, 3 MDS, 4 DN) repartidas en 3 zonas de disponibilidad (`us-east-1a/b/c`), comunicándose por red real con TLS 1.3/mTLS.
+El sistema fue desplegado y verificado en **VM reales** de AWS Academy (1 gateway, 3 MDS, 4 DN) repartidas en 3 zonas de disponibilidad (`us-east-1a/b/c`), comunicándose por red real con TLS 1.3/mTLS — guía completa en [`docs/DESPLIEGUE_PASO_A_PASO.md`](docs/DESPLIEGUE_PASO_A_PASO.md).
 
 **Resumen del despliegue** (todo se ejecuta desde el gateway, única VM con IP pública):
 ```bash
@@ -96,7 +101,7 @@ bash deploy/aws/chaos_all.sh dn-4 corrupt        # corrompe un bloque en disco
 
 ## RF3 — semántica declarada (no es POSIX completo)
 `open(path, modo)`: **x** crear (falla si existe) · **w** reemplazar · **a** anexar · **r** leer · **r+** modificar rangos *dentro* del tamaño actual (copy-on-write de los bloques afectados).
-Close-to-open: las escrituras son privadas hasta `close()/flush()`; el commit publica una versión nueva de forma atómica y cualquier `open()` posterior la ve. Cada `open()` fija una instantánea; `read(off, n)` trae solo los bloques afectados y, dentro de cada bloque, solo los segmentos GCM de 64 KiB necesarios. `lock()`: compartido o exclusivo, sobre el archivo o un bloque, con lease de 30 s y época de fencing. Detalle en `docs/INFORME_TECNICO_FINAL.pdf`.
+Close-to-open: las escrituras son privadas hasta `close()/flush()`; el commit publica una versión nueva de forma atómica y cualquier `open()` posterior la ve. Cada `open()` fija una instantánea; `read(off, n)` trae solo los bloques afectados y, dentro de cada bloque, solo los segmentos GCM de 64 KiB necesarios. `lock()`: compartido o exclusivo, sobre el archivo o un bloque, con lease de 30 s y época de fencing. Detalle en `docs/DISENO_FASE2.md`.
 
 ## Pruebas → rúbrica (§5.2)
 | Prueba | Archivo | Evidencia |
@@ -113,4 +118,4 @@ Close-to-open: las escrituras son privadas hasta `close()/flush()`; el commit pu
 | Gateway NGINX real (307, 503 intacto, caída del líder) | `test_t10_*` | `T10_gateway.txt` |
 | Journal de Raft: un `AppendEntries` atrasado no borra entradas aplicadas | `test_t0_*` | `T0_raft_journal.txt` |
 
-`evidencias/Local/RESUMEN.md` reúne las evidencias locales, la tabla de rendimiento y las gráficas.
+`python scripts/resumen.py` reúne todas las evidencias locales, la tabla de rendimiento y las gráficas en `evidencias/Local/RESUMEN.md`.
